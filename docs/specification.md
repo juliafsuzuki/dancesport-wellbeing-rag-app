@@ -1,0 +1,246 @@
+# Wellbeing Coach RAG Application — Functional & Technical Specification
+
+## 1. Purpose & Scope
+
+The DanceSport Wellbeing Coach is a single-source Retrieval-Augmented Generation (RAG) application that allows DanceSport athletes to ask natural-language questions about competition preparation, mental performance, and career development. All answers are grounded exclusively in the coaching workbook *Dance To Your Maximum* by Maximiliaan Winkelhuis, with inline citations to chapter and page.
+
+## 2. Functional Specification
+
+### 2.1 Target User
+
+A DanceSport athlete (amateur or professional) preparing for a competition, showcase, or season. The user may have no AI/ML background; the interface must be self-explanatory.
+
+### 2.2 User Stories
+
+| ID | As a… | I want to… | So that… |
+|---|---|---|---|
+| US-01 | Athlete | Ask a free-text question in plain English | I can get relevant coaching advice immediately |
+| US-02 | Athlete | Browse categorised example questions | I can discover what the system knows without knowing where to start |
+| US-03 | Athlete | See which chapter and page the answer comes from | I can read the source material for deeper study |
+| US-04 | Athlete | Receive an honest "I don't know" when the topic is outside the book | I am not misled by fabricated advice |
+| US-05 | Athlete | Maintain a conversation history within a session | I can refer back to earlier answers without re-asking |
+
+### 2.3 Question Categories (UI)
+
+The UI surfaces 6 pre-built question categories, each with 4 example questions:
+
+| Category | Focus |
+|---|---|
+| Performance Readiness | Readiness signals, final weeks, mistake recovery |
+| Practice & Preparation | Routine practice, frequency, memorisation |
+| Musicality & Timing | Timing, breathing, music connection |
+| Confidence & Stage Presence | Nerves, first impression, projecting confidence |
+| Expression & Storytelling | Emotional connection, story, memorability |
+| Mindset & Mental Performance | Focus, visualisation, post-mistake recovery |
+
+### 2.4 Answer Behaviour
+
+- Every factual claim is tagged: `[KNOWN]`, `[INFERRED]`, `[COMPUTED]`, `[COMMON]`, `[FRAME]`, or `[GUESS]`
+- Every claim carries an inline citation: `[Dance To Your Maximum, Chapter X-Y, pp. Z–W]`
+- When no relevant context is found, the first line of the answer is `"I don't have that in my knowledge base."` — no fabrication
+- The persona is expert, direct, and anti-sycophantic: does not capitulate to pushback without new evidence
+- A confidence level (HIGH / MED / LOW / VERY LOW / UNKNOWN) accompanies claims
+
+### 2.5 Session Behaviour
+
+- Chat history persists within a browser session (Streamlit `session_state`)
+- History resets on page reload (no persistent cross-session memory)
+- Clicking an example question injects it as if typed by the user
+
+### 2.6 Evaluation Acceptance Criteria
+
+- Faithfulness target: ≥ 90% of answers on the 15-question benchmark are fully supported by the retrieved context (LLM judge)
+- Faithfulness is evaluated in-notebook; a PASS/FAIL result is printed
+
+## 3. Technical Specification
+
+### 3.1 Technology Stack
+
+| Layer | Technology | Version / Model |
+|---|---|---|
+| Language | Python | 3.x (`.venv`) |
+| LLM — routing & judge | OpenAI ChatOpenAI | `gpt-4.1-mini`, temp=0 |
+| LLM — generation | OpenAI ChatOpenAI | `gpt-4.1-mini`, temp=0.1 |
+| Embeddings | OpenAI | `text-embedding-3-small`, dim=1536 |
+| Orchestration | LangChain + LangGraph | Current stable |
+| Observability | LangSmith | Project: `wellbeing-coach-rag-app-langchain` |
+| Vector store | Pinecone Serverless | Index: `wellbeing-coach-rag`, cosine, AWS `us-east-1` |
+| PDF rendering | PyMuPDF (fitz) | — |
+| OCR | Tesseract via pytesseract | English model |
+| UI | Streamlit | — |
+| Environment | python-dotenv / `.env` | Keys: `OPENAI_API_KEY`, `PINECONE_API_KEY`, `LANGCHAIN_API_KEY` |
+
+### 3.2 Repository Layout
+
+```
+wellbeing-coach-rag-app/
+├── app.py                          # Streamlit chat UI
+├── rag_chain.py                    # RAG graph, router, retriever, generator (importable)
+├── 1_wellbeing_coach__rag_app_langchain.ipynb  # End-to-end pipeline + evaluation
+├── data/
+│   ├── e-Book_dance-to-your-maximum.pdf        # Source corpus (316 pages, image-based)
+│   └── ocr_cache.json                          # OCR output cache (run-once)
+├── images/                         # Diagram PNGs displayed in notebook
+├── generate_diagrams.py            # Diagram generation utility
+└── .venv/                          # Python virtual environment
+```
+
+### 3.3 Data Pipeline
+
+The ingestion pipeline runs once in the notebook and writes to Pinecone. The Streamlit app reads from Pinecone only.
+
+```
+PDF (316 image pages)
+  │
+  ▼  PyMuPDF → Tesseract OCR (150 DPI, grayscale)
+  │  [cached to ocr_cache.json after first run]
+  │
+  ▼  Text Cleaning
+  │  - merge hyphenated line-breaks
+  │  - collapse whitespace
+  │  - collapse 3+ blank lines → paragraph break
+  │
+  ▼  Structure Detection & Metadata Enrichment (per page)
+  │  Regex-detected fields:
+  │    part / part_scope   (Part One → competition_day, etc.)
+  │    chapter / chapter_title  (e.g. "1-2", "Season Planning")
+  │    section_type        (prose | test | form | appendix | intro | toc)
+  │    page_start, page_end
+  │    source = "dance_to_your_maximum"
+  │
+  ▼  Hierarchical Chunking (RecursiveCharacterTextSplitter)
+  │    Prose:        chunk_size=1200, overlap=200
+  │    Test/Form:    chunk_size=2200, overlap=150
+  │    min_chunk_size=100 (discard below)
+  │    chunk_id = MD5 hash of content (12 chars)
+  │    parent_id = "page_{page_start}"
+  │
+  ▼  OpenAI text-embedding-3-small  (1536-dim vectors)
+  │
+  ▼  Pinecone upsert (batch=100)
+     Index: wellbeing-coach-rag
+```
+
+### 3.4 Chunk Metadata Schema (Pinecone)
+
+Each vector carries this metadata payload:
+
+| Field | Type | Example |
+|---|---|---|
+| `source` | str | `"dance_to_your_maximum"` |
+| `part` | str | `"Part One"` |
+| `part_scope` | str | `"competition_day"` |
+| `chapter` | str | `"1-2"` |
+| `chapter_title` | str | `"Competition Morning Routine"` |
+| `section_type` | str | `"prose"` |
+| `page_start` | int | 21 |
+| `page_end` | int | 24 |
+| `chunk_id` | str | `"a3f9bc12de7f"` |
+| `parent_id` | str | `"page_21"` |
+
+### 3.5 RAG Graph (LangGraph)
+
+The runtime pipeline is a deterministic 3-node directed graph with no conditional branches:
+
+```
+[route] ──► [retrieve] ──► [generate] ──► END
+```
+
+**State (`RAGState` TypedDict):**
+
+| Field | Type | Set by |
+|---|---|---|
+| `question` | str | caller |
+| `chat_history` | List[BaseMessage] | caller |
+| `route` | dict | `route` node |
+| `documents` | List[Document] | `retrieve` node |
+| `answer` | str | `generate` node |
+
+**Node: `route`**
+- Calls `gpt-4.1-mini` with a structured prompt
+- Returns `{"part_scope": "...", "section_type": "..."}` (JSON)
+- Fallback on parse error: `{"part_scope": "general", "section_type": "general"}`
+
+**Node: `retrieve`**
+- Builds a Pinecone filter from the route
+  - `part_scope != "general"` → `{"part_scope": {"$eq": value}}`
+  - `section_type` not in `{"prose", "general"}` → `{"section_type": {"$in": [value]}}`
+- Primary search: `k=4` with filter; fallback to `k=6` unfiltered if filter returns 0 results
+- Returns `documents` list
+
+**Node: `generate`**
+- Formats context with inline source attribution per chunk
+- Calls `gpt-4.1-mini` (temp=0.1) with system prompt + context + question
+- Returns answer string
+- If `documents` is empty → returns refusal string directly (no LLM call)
+
+### 3.6 Query Routing Logic
+
+| Question intent | `part_scope` | `section_type` |
+|---|---|---|
+| Competition day stress, morning routine, warm-up | `competition_day` | `prose` |
+| Season planning, choreography, exercises | `season` | `prose` |
+| Long-term goals, career arc, identity | `career` | `prose` |
+| Questionnaire, self-assessment, personal test | (any) | `test` |
+| Evaluation form, worksheet | (any) | `form` |
+| Appendix content | (any) | `appendix` |
+| Unclear or cross-part | `general` | `general` |
+
+When `general` is returned, no Pinecone filter is applied; all 6 top-k results come from the full index.
+
+### 3.7 Answer Format & Epistemic Tags
+
+The system prompt imposes a strict tagging and citation protocol:
+
+```
+[KNOWN]    — established training fact
+[INFERRED] — logical deduction from context
+[COMPUTED] — numeric calculation
+[COMMON]   — standard field knowledge
+[FRAME]    — symbolic system (coherent but not empirical)
+[GUESS]    — no basis in context
+
+Confidence: HIGH ≥80% · MED 50–80% · LOW 20–50% · VERY LOW <20% · UNKNOWN
+
+Citation:  [Dance To Your Maximum, Chapter X-Y, pp. Z–W]
+```
+
+### 3.8 Streamlit UI Architecture
+
+`app.py` imports the `ask()` function from `rag_chain.py`. The RAG graph is initialised once via a module-level singleton (`_rag_app`) and reused across all requests.
+
+**UI layout:**
+- Page header with title and subtitle
+- Description paragraph
+- 2-column grid of 6 category headers × 4 clickable question buttons
+- Horizontal divider
+- Scrollable chat history (Streamlit `st.chat_message`)
+- Persistent `st.chat_input` at the bottom
+
+**Pending question pattern:** clicking a button sets `st.session_state.pending_question`; the main render loop reads it before reading `st.chat_input`, then calls `st.rerun()` to re-render with the answer appended.
+
+### 3.9 Observability
+
+All LLM calls are traced to LangSmith automatically when `LANGCHAIN_TRACING_V2=true` and `LANGCHAIN_API_KEY` are set. The project name is `wellbeing-coach-rag-app-langchain`. Each full invocation (route + retrieve + generate) appears as a single parent trace with three child spans.
+
+### 3.10 Evaluation Pipeline
+
+Located in notebook Section 11. Runs in-notebook against the live Pinecone index.
+
+- Test set: 15 fixed questions covering all 3 parts and both prose and form section types
+- Judge model: `gpt-4.1-mini`, temp=0
+- Verdict format: `FAITHFUL: <reason>` or `NOT_FAITHFUL: <reason>`
+- Pass threshold: ≥ 90% faithful (≥ 14 / 15)
+- Failures are printed with question, truncated answer, and judge reasoning
+
+## 4. Constraints & Non-Requirements
+
+| Constraint | Detail |
+|---|---|
+| Single corpus | The system is hard-coded to *Dance To Your Maximum*; no multi-document or upload capability |
+| No cross-session memory | Chat history lives in `st.session_state` only; reloading the page clears it |
+| No re-ranking | Retrieval is pure dense cosine similarity; no BM25 hybrid or cross-encoder re-ranking |
+| No streaming | Answers are returned as a complete string; no token-by-token streaming to the UI |
+| OCR quality dependency | Answer quality is bounded by Tesseract OCR accuracy on scanned pages; tables and diagrams may not OCR cleanly |
+| API key management | Keys are loaded from a local `.env` file; no secrets manager or rotation mechanism |
+| Single-user deployment | Streamlit runs as a single-process local server; no authentication or multi-tenancy |
