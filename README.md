@@ -7,18 +7,35 @@ A single-source RAG application that helps DanceSport athletes prepare for compe
 ## Stack
 
 - **Orchestration:** LangChain + LangGraph + LangSmith
-- **LLM:** OpenAI `gpt-4.1-mini`
+- **LLM:** OpenAI `gpt-4.1-mini` (routing/judge temp=0, generation temp=0.1)
 - **Embeddings:** OpenAI `text-embedding-3-small` (dim=1536)
-- **Vector store:** Pinecone (serverless, cosine similarity)
+- **Vector store:** Pinecone Serverless — index `wellbeing-coach-rag`, cosine, AWS `us-east-1`
+- **PDF + OCR:** PyMuPDF (fitz) + Tesseract (pytesseract)
 - **UI:** Streamlit (`app.py`)
 - **Notebook:** `1_wellbeing_coach__rag_app_langchain.ipynb`
 - **LangSmith project:** `wellbeing-coach-rag-app-langchain`
 
 ## Documentation
 
-- [Project Design](docs/project_design.md) — Full architecture, ingestion, chunking, retrieval, routing, citations, and evaluation decisions.
+- [Functional & Technical Specification](docs/specification.md) — Authoritative spec: user stories, UI categories, RAG graph, routing, metadata schema, evaluation, constraints.
+- [Project Design](docs/project_design.md) — Architecture, chunking, retrieval, and evaluation decisions.
 - [Memory Index](docs/MEMORY.md) — Index of design and reference docs.
 - [Repo Reference](docs/reference_github.md) — Canonical repository URL.
+
+## Repository layout
+
+```
+wellbeing-coach-rag-app/
+├── app.py                          # Streamlit chat UI
+├── rag_chain.py                    # RAG graph, router, retriever, generator
+├── 1_wellbeing_coach__rag_app_langchain.ipynb  # End-to-end pipeline + evaluation
+├── data/
+│   ├── e-Book_dance-to-your-maximum.pdf        # Source corpus (316 pages, image-based)
+│   └── ocr_cache.json                          # OCR output cache (run-once)
+├── images/                         # Diagram PNGs displayed in notebook
+├── generate_diagrams.py            # Diagram generation utility
+└── .venv/                          # Python virtual environment
+```
 
 ## Getting started
 
@@ -30,4 +47,13 @@ A single-source RAG application that helps DanceSport athletes prepare for compe
 
 ## Evaluation
 
-15-question fixed test set with an LLM judge plus manual spot-check. Target: ≥90% faithfulness (claims fully supported by retrieved context). See [docs/project_design.md](docs/project_design.md) for details.
+15-question fixed test set with an LLM judge (`gpt-4.1-mini`, temp=0) plus manual spot-check. Target: ≥90% faithfulness (claims fully supported by retrieved context). PASS/FAIL is printed in-notebook. See [docs/specification.md §3.10](docs/specification.md) for details.
+
+## Constraints
+
+- Single corpus (no multi-document upload)
+- No cross-session memory (chat history clears on reload)
+- No re-ranking, no streaming
+- Local `.env` for secrets; single-process Streamlit deployment
+
+See [docs/specification.md §4](docs/specification.md) for the full list.
