@@ -27,24 +27,14 @@ Athletes can ask questions and receive guidance across six categories:
 
 All responses are grounded exclusively in Dance To Your Maximum by Maximiliaan Winkelhuis and include inline citations to the relevant chapter and page, enabling athletes to verify the source material and explore the concepts in greater depth.
 
-## Scope and Constraints
-The system is intentionally single-source: all knowledge is derived from Dance To Your Maximum. Questions outside the scope of the book trigger a graceful refusal rather than a speculative answer. This design choice prioritises reliability over breadth.
+## Home page 
 
-### Key capabilities:
-
-Conversational Q&A via a Streamlit web interface, accessible to non-technical users
-Intelligent query routing (powered by LangGraph) that directs questions to the most relevant section of the knowledge base — competition day, season, or career
-Structured retrieval from Pinecone vector store using semantic search and metadata filters (by part, chapter, and content type)
-Inline citations in every response, formatted as [Dance To Your Maximum, Chapter X-X, pp. XX–XX], enabling athletes and coaches to verify and deepen their reading
-Faithfulness evaluation pipeline using an LLM-as-judge approach, targeting ≥90% faithfulness against a 15-question benchmark test set
-
-## Home page | GUI where DanceSport athletes (target audience) can interact with the RAG Application
-
-The home page surfaces 6 pre-built categories with clickable example questions, arranged in a two-column grid as shown in the diagram below.
+The home page surfaces 6 pre-built categories with clickable example questions, arranged in a two-column grid.
 
 <img width="378" height="692" alt="Screenshot 2026-06-21 222442" src="https://github.com/user-attachments/assets/819e36f8-1ae6-4d46-ae61-886fcf705d5b" />
 
-Below: Lists of questions for 6 different categories.
+
+Below: Lists of questions for 6 categories.
 
 **🎯 Performance Readiness**
 - How do I know if I am ready to perform my showcase?|
@@ -111,6 +101,17 @@ Every claim is tagged and cited:
 
 The ingestion pipeline applies hierarchical chunking tuned to the workbook's structure: tighter chunks for prose chapters (1,200 chars) and larger windows for tests, forms, and appendices (2,200 chars), preserving semantic coherence. Each chunk carries rich metadata — part scope, chapter, section type, and page range — enabling targeted retrieval and accurate citation generation.
 
+## Scope and Constraints
+The system is intentionally single-source: all knowledge is derived from Dance To Your Maximum. Questions outside the scope of the book trigger a graceful refusal rather than a speculative answer. This design choice prioritises reliability over breadth.
+
+### Key capabilities:
+
+Conversational Q&A via a Streamlit web interface, accessible to non-technical users
+Intelligent query routing (powered by LangGraph) that directs questions to the most relevant section of the knowledge base — competition day, season, or career
+Structured retrieval from Pinecone vector store using semantic search and metadata filters (by part, chapter, and content type)
+Inline citations in every response, formatted as [Dance To Your Maximum, Chapter X-X, pp. XX–XX], enabling athletes and coaches to verify and deepen their reading
+Faithfulness evaluation pipeline using an LLM-as-judge approach, targeting ≥90% faithfulness against a 15-question benchmark test set
+
 ## Value Proposition
 
 Trustworthy outputs: every claim links back to a specific page range in the source text, eliminating hallucination risk on in-scope questions
@@ -163,4 +164,3 @@ wellbeing-coach-rag-app/
 - No re-ranking, no streaming
 - Local `.env` for secrets; single-process Streamlit deployment
 
-See [docs/specification.md §4](docs/specification.md) for the full list.
