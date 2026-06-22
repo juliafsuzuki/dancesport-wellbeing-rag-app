@@ -67,7 +67,7 @@ dancesport-wellbeing-rag-app/
 
 <br />
 
-# Quick Start
+# How to access and test the RAG application
 
 ## Prerequisites
 
@@ -81,7 +81,7 @@ Before running the app, make sure you have:
 | Pinecone API key | [pinecone.io](https://www.pinecone.io/) — free Starter plan is sufficient |
 | Source PDF | *Dance To Your Maximum* by Maximiliaan Winkelhuis — place at `data/e-Book_dance-to-your-maximum.pdf` |
 
-## Setup
+## Accessing the App
 
 **1. Clone the repository**
 
@@ -160,24 +160,6 @@ Open the notebook and run **Section 11** to measure faithfulness across the fixe
 <br />
 
 # Technical Overview
-
-<img width="1672" height="941" alt="1-Retrieve" src="https://github.com/user-attachments/assets/49a9ce83-1d2d-4adc-8795-c55a7106d330" />
-<br />
-
-<img width="1672" height="941" alt="2-Context" src="https://github.com/user-attachments/assets/850c5b13-ef52-46e5-bf13-cc13b59a2901" />
-<br />
-
-<img width="1672" height="941" alt="3-Generate-v1" src="https://github.com/user-attachments/assets/c88b9e9d-abdb-4daa-ba9a-6770cbc453fa" />
-<br />
-
-<img width="1672" height="941" alt="4-Response-v1" src="https://github.com/user-attachments/assets/73965881-e1fd-4f7b-9b64-89b9b075d57c" />
-<br />
-
-<img width="1672" height="941" alt="5-Evaluate-v1" src="https://github.com/user-attachments/assets/89a894a4-fb80-4685-8b28-71be35b335e3" />
-<br />
-
-<img width="1672" height="941" alt="6-PutItAllTogether" src="https://github.com/user-attachments/assets/67ae4ce9-459d-4769-aec4-eb4f0e03c4ab" />
-<br />
 
 <img width="1672" height="941" alt="6-EndToEndWorkflow" src="https://github.com/user-attachments/assets/d0e37f8d-ef2b-4fdd-99c3-f166a12b1edb" />
 
@@ -368,7 +350,7 @@ The evaluation pipeline is reproducible and self-contained in the notebook (Sect
 
 <!-- END -->
 
-## Chatbot UI
+# Chatbot UI
 
 The home page surfaces 6 pre-built categories with clickable example questions, arranged in a two-column grid.
 
