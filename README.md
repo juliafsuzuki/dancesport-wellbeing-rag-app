@@ -58,15 +58,18 @@ wellbeing-coach-rag-app/
 ## Technical Architecture
 
 <img width="1672" height="941" alt="6-EndToEndWorkflow" src="https://github.com/user-attachments/assets/d0e37f8d-ef2b-4fdd-99c3-f166a12b1edb" />
+<br />
 
-### Getting started
+### Getting started:
 1. Create a virtual environment: `python -m venv .venv`
 2. Activate it and install dependencies.
 3. Populate `.env` with `OPENAI_API_KEY`, `PINECONE_API_KEY`, and `LANGCHAIN_API_KEY`.
 4. Run the notebook to ingest the PDF and build the Pinecone index.
 5. Launch the UI: `streamlit run app.py`
 
-### AI Stack
+<br />
+
+### AI Stack:
 - **Orchestration:** LangChain + LangGraph + LangSmith
 - **LLM:** OpenAI `gpt-4.1-mini` (routing/judge temp=0, generation temp=0.1)
 - **Embeddings:** OpenAI `text-embedding-3-small` (dim=1536)
@@ -90,7 +93,7 @@ The home page surfaces 6 pre-built categories with clickable example questions, 
 
 --
 
-### Lists of questions for 6 categories
+### Lists of questions for 6 categories:
 
 **🎯 Performance Readiness**
 - How do I know if I am ready to perform my showcase?|
@@ -131,7 +134,9 @@ The home page surfaces 6 pre-built categories with clickable example questions, 
 
 Users can also type a free-text question in the persistent chat input at the bottom.
 
-### Answer format
+<br />
+
+### Answer format:
 
 Every claim is tagged and cited:
 
@@ -139,7 +144,9 @@ Every claim is tagged and cited:
 - **Confidence:** HIGH (≥80%) · MED (50–80%) · LOW (20–50%) · VERY LOW (<20%) · UNKNOWN
 - **Citation:** `[Dance To Your Maximum, Chapter X-Y, pp. Z–W]`
 - **Refusal:** When no relevant context is retrieved, the answer begins with `"I don't have that in my knowledge base."` — no fabrication.
-  
+
+<br />
+
 ## Scope and Constraints
 
 - Single corpus (no multi-document upload): all knowledge is derived from an e-book, Dance To Your Maximum. 
