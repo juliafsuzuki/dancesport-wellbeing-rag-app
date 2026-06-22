@@ -1,6 +1,6 @@
 # DanceSport Wellbeing Coach RAG Application
 
-## Overview
+## Solution Overview
 
 The DanceSport Wellbeing Coach is a single-source Retrieval-Augmented Generation (RAG) application that enables DanceSport athletes to access trusted guidance on training, performance, and wellbeing by asking natural-language questions related to showcase and competition preparation.
 
@@ -24,10 +24,6 @@ All responses are grounded exclusively in Dance To Your Maximum by Maximiliaan W
 ## Problem Statement
 
 Competitive dancers face a complex mix of physical, psychological, and strategic challenges across competition days, training seasons, and long-term careers. Expert coaching resources exist in written form but are not readily accessible in a conversational, queryable format. Athletes and coaches lack a fast, reliable way to surface specific, contextually relevant guidance in the moment they need it.
-
-## Solution
-
-The application ingests Dance To Your Maximum by Maximiliaan Winkelhuis — a structured workbook covering competition-day psychology, seasonal training, and career planning — and makes it fully searchable through natural language conversation. Users receive precise, cited answers grounded in the source material.
 
 ## Scope and Constraints
 The system is intentionally single-source: all knowledge is derived from Dance To Your Maximum. Questions outside the scope of the book trigger a graceful refusal rather than a speculative answer. This design choice prioritises reliability over breadth.
