@@ -12,10 +12,15 @@ The coach is designed to serve multiple roles, including a/an:
 - **Wellbeing and performance companion** that helps athletes strengthen the physical, mental, emotional, and performance dimensions.
 - **Personalized companion** that supports athletes in their pursuit of excellence, continuous improvement, and mastery.
 
-Athletes can ask questions and receive guidance across six categories: performance readiness, practice and preparation, musicality and timing, confidence and stage presence, expression and storytelling, and mindset and mental performance.
-All responses are grounded exclusively in Dance To Your Maximum by Maximiliaan Winkelhuis and include inline citations to the relevant chapter and page, enabling athletes to verify the source material and explore the concepts in greater depth.
-
-All responses are grounded exclusively in *Dance To Your Maximum* by Maximiliaan Winkelhuis and include inline citations to the relevant chapter and page number for transparency and traceability.
+Athletes can ask questions and receive guidance across six categories: 
+1. performance readiness,
+2. practice and preparation,
+3. musicality and timing,
+4. confidence and stage presence,
+5. expression and storytelling, and
+6. mindset and mental performance.
+   
+All responses are grounded exclusively in *Dance To Your Maximum* by Maximiliaan Winkelhuis and include inline citations to the relevant chapter and page, enabling athletes to verify the source material and explore the concepts in greater depth.
 
 ## 2. Functional Specification
 
