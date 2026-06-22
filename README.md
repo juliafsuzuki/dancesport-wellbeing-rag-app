@@ -147,7 +147,7 @@ Use the chat input at the bottom of the page to ask anything related to competit
 
 - Each factual claim is tagged: `[KNOWN]`, `[INFERRED]`, `[COMPUTED]`, `[COMMON]`, `[FRAME]`, or `[GUESS]`
 - A confidence level (`HIGH` / `MED` / `LOW`) accompanies each claim
-- An inline citation points to the exact chapter and page: `[Dance To Your Maximum, Chapter 1-2, pp. 21–24]`
+- An inline citation points to the exact chapter and page: `[Dance To Your Maximum, Chapter 1-2, Page 21–24]`
 - If the question falls outside the book's scope, the response opens with `"I don't have that in my knowledge base."` — no speculation
 
 **Option C — Run the evaluation pipeline**
