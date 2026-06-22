@@ -94,9 +94,9 @@ def format_context(docs: List[Document]) -> str:
     for doc in docs:
         meta = doc.metadata
         chapter = meta.get("chapter", "N/A")
-        page_start = meta.get("page_start", "")
-        page_end = meta.get("page_end", "")
-        if page_start and page_end and str(page_start) != str(page_end):
+        page_start = int(meta["page_start"]) if meta.get("page_start") != "" and meta.get("page_start") is not None else ""
+        page_end   = int(meta["page_end"])   if meta.get("page_end")   != "" and meta.get("page_end")   is not None else ""
+        if page_start != "" and page_end != "" and page_start != page_end:
             cite = f"[Dance To Your Maximum, Chapter {chapter}, Page {page_start}–{page_end}]"
         elif page_start:
             cite = f"[Dance To Your Maximum, Chapter {chapter}, Page {page_start}]"
