@@ -110,16 +110,21 @@ The home page (shown in the image below) surfaces 6 pre-built question categorie
 ### 2.2 Repository Layout
 
 ```
-wellbeing-coach-rag-app/
+dancesport-wellbeing-rag-app/
 ├── app.py                          # Streamlit chat UI
 ├── rag_chain.py                    # RAG graph, router, retriever, generator (importable)
-├── 1_wellbeing_coach__rag_app_langchain.ipynb  # End-to-end pipeline + evaluation
-├── data/
-│   ├── e-Book_dance-to-your-maximum.pdf        # Source corpus (316 pages, image-based)
-│   └── ocr_cache.json                          # OCR output cache (run-once)
-├── images/                         # Diagram PNGs displayed in notebook
+├── 1_wellbeing_coach_rag_app_langchain.ipynb   # End-to-end pipeline + evaluation
 ├── generate_diagrams.py            # Diagram generation utility
-└── .venv/                          # Python virtual environment
+├── requirements.txt                # Pinned direct dependencies
+├── .gitignore
+├── data/
+│   └── ocr_cache.json              # Cached OCR output (run-once)
+│   # Note: source PDF not included (copyright) — add as data/e-Book_dance-to-your-maximum.pdf
+├── images/                         # Section process diagrams (01–11) + home page screenshot
+├── images-2/                       # End-to-end workflow diagrams used in README
+└── docs/
+    ├── project_specification.md
+    └── project_design.md
 ```
 
 ### 2.3 Data Pipeline
@@ -246,7 +251,7 @@ Citation:  [Dance To Your Maximum, Chapter X-Y, pp. Z–W]
 
 `app.py` imports the `ask()` function from `rag_chain.py`. The RAG graph is initialised once via a module-level singleton (`_rag_app`) and reused across all requests.
 
-**UI layout (see [`images/home_page.jpg`](../images/home_page.jpg)):**
+**UI layout (see [`images/`](../images/)):**
 - Page header: "DanceSport Wellbeing Coach" with logo and link icon
 - Subtitle: "Grounded in *Dance To Your Maximum* — Maximiliaan Winkelhuis"
 - Description paragraph: "Ask me anything about showcase or competition preparation. I'll answer using the coaching materials in my knowledge base and cite the exact passage and page number for every response."

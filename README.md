@@ -12,7 +12,7 @@ The DanceSport Wellbeing Coach is a single-source Retrieval-Augmented Generation
 
 The coach is designed to serve multiple roles, including a/an:
 - Evidence-based advisor that provides trusted guidance specially for showcase and competition success.
-- anceSport coach that helps athletes train effectively, perform with confidence, and compete at their highest potential.
+- DanceSport coach that helps athletes train effectively, perform with confidence, and compete at their highest potential.
 - Full Potential coach that empowers athletes to unlock their maximum potential both on and off the dance floor.
 - Wellbeing and performance companion that helps athletes strengthen the physical, mental, emotional, and performance dimensions.
 - Personalized companion that supports athletes in their pursuit of excellence, continuous improvement, and mastery.
@@ -25,12 +25,11 @@ Athletes can ask questions and receive guidance across six categories:
 5. Expression and storytelling
 6. Mindset and mental performance
 
-All responses are grounded exclusively in an PDF e-book, "Dance To Your Maximum" by Maximiliaan Winkelhuis and include inline citations to the relevant chapter and page, enabling athletes to verify the source material and explore the concepts in greater depth.
+All responses are grounded exclusively in a PDF e-book, *Dance To Your Maximum* by Maximiliaan Winkelhuis, and include inline citations to the relevant chapter and page, enabling athletes to verify the source material and explore the concepts in greater depth.
 
 ### Corpus
-A single corpus is used to build the solution. A corpus is a PDF e-book, "Dance To Your Maximum" by Maximiliaan Winkelhuis.
 
-It is a structured workbook with:
+*Dance To Your Maximum* (Maximiliaan Winkelhuis) is a structured workbook with:
 - Part One: The Competition Day
 - Part Two: The Season
 - Part Three: The Dancer’s Career
@@ -40,27 +39,27 @@ It is a structured workbook with:
 ## Repository layout
 
 ```
-wellbeing-coach-rag-app/
+dancesport-wellbeing-rag-app/
 ├── app.py                          # Streamlit chat UI
 ├── rag_chain.py                    # RAG graph, router, retriever, generator
-├── 1_wellbeing_coach__rag_app_langchain.ipynb  # End-to-end pipeline + evaluation
-├── data/
-│   ├── e-Book_dance-to-your-maximum.pdf        # Source corpus (316 pages, image-based)
-│   └── ocr_cache.json                          # OCR output cache (run-once)
-├── images/
-│   └── home_page.jpg                           # Home page screenshot
-├── docs/
-│   ├── specification.md                        # Functional & technical specification
-│   ├── project_design.md                       # Architecture & design decisions
-│   ├── MEMORY.md                               # Memory index
-│   └── reference_github.md                     # Repo reference
+├── 1_wellbeing_coach_rag_app_langchain.ipynb   # End-to-end pipeline + evaluation
 ├── generate_diagrams.py            # Diagram generation utility
-└── .venv/                          # Python virtual environment
+├── requirements.txt                # Pinned direct dependencies
+├── .gitignore
+├── data/
+│   └── ocr_cache.json              # Cached OCR output — avoids re-running Tesseract
+│   # Note: the source PDF is not included (copyright). Add your own copy as:
+│   # data/e-Book_dance-to-your-maximum.pdf
+├── images/                         # Section process diagrams (01–11) + home page screenshot
+├── images-2/                       # End-to-end workflow diagrams used in README
+└── docs/
+    ├── project_specification.md    # Functional & technical specification
+    └── project_design.md           # Architecture & design decisions
 ```
 
 ### Documentation
 
-- [Project Specification](docs/specification.md): Both functional & technical: user stories, UI categories, RAG graph, routing, metadata schema, evaluation, constraints.
+- [Project Specification](docs/project_specification.md): User stories, UI categories, RAG graph, routing, metadata schema, evaluation pipeline, and constraints.
 - [Project Design](docs/project_design.md): Architecture, chunking, retrieval, and evaluation decisions.
 
 <br />
@@ -69,7 +68,7 @@ wellbeing-coach-rag-app/
 
 <img width="1672" height="941" alt="6-EndToEndWorkflow" src="https://github.com/user-attachments/assets/d0e37f8d-ef2b-4fdd-99c3-f166a12b1edb" />
 
-#### START
+<!-- START -->
 
 ### Pipeline Overview
 
@@ -99,6 +98,7 @@ Streamlit (app.py) → renders categorised example questions + chat interface
 # Create and activate virtual environment
 python -m venv .venv
 .venv\Scripts\activate          # Windows
+source .venv/bin/activate       # macOS / Linux
 
 # Install dependencies
 pip install -r requirements.txt
@@ -128,7 +128,7 @@ streamlit run app.py
 
 **Solution:**
 
-1. PyMuPDF (`fitz`) renders each page to a grayscale image at 300 DPI.
+1. PyMuPDF (`fitz`) renders each page to a grayscale image at 150 DPI.
 2. Tesseract (`pytesseract`) extracts text from the image via OCR.
 3. Results are cached to `data/ocr_cache.json` so OCR runs only once across sessions.
 
@@ -214,32 +214,7 @@ A 3-node stateful graph (`route → retrieve → generate`) processes every quer
 
 ---
 
-### 6. Tagging & Citation
-
-Every claim in the generated answer must carry an explicit tag and an inline source citation.
-
-**Claim tags:**
-
-| Tag | Meaning |
-|---|---|
-| `[KNOWN]` | Established training fact |
-| `[COMPUTED]` | Calculated value |
-| `[INFERRED]` | Logical deduction from context |
-| `[COMMON]` | Standard domain knowledge |
-| `[FRAME]` | Symbolic system (coherent ≠ real-world claim) |
-| `[GUESS]` | No supporting basis |
-
-**Citation format** (inline, after each claim):
-
-```
-[Dance To Your Maximum, Chapter 1-2, pp. 21–24]
-```
-
-Chapter numbers follow the book's own numbering scheme (e.g. `1-2`, `2-8`, `3-1`). Page range uses `pp.` for multi-page spans and `p.` for a single page. Citations are drawn from chunk metadata (`chapter`, `page_start`, `page_end`) — never fabricated.
-
----
-
-### 7. Evaluation
+### 6. Evaluation
 
 **Method:** Automated LLM-as-judge using `gpt-4.1-mini`, run inside the notebook.
 
@@ -278,7 +253,7 @@ The evaluation pipeline is reproducible and self-contained in the notebook (Sect
 | UI | Streamlit (`app.py`) |
 | Notebook | `1_wellbeing_coach_rag_app_langchain.ipynb` |
 
-#### END
+<!-- END -->
 
 ## Chatbot UI
 
@@ -291,7 +266,7 @@ The home page surfaces 6 pre-built categories with clickable example questions, 
 ### Lists of questions for 6 categories:
 
 **🎯 Performance Readiness**
-- How do I know if I am ready to perform my showcase?|
+- How do I know if I am ready to perform my showcase?
 - What should I focus on during the final weeks before my showcase?
 - How can I reduce mistakes during my performance?
 - What should I do if I forget part of my routine on the floor?
