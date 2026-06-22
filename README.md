@@ -436,7 +436,7 @@ Every claim is tagged, confidence-rated, and cited.
 - **Semantic retrieval** from Pinecone vector store with metadata filtering; falls back to unfiltered search when a filtered query returns no results
 - **Image-based PDF support:** the source e-book is fully scanned (no text layer); PyMuPDF + Tesseract OCR pipeline extracts text with results cached to disk after the first run
 - **Epistemic tagging:** every claim is labelled `[KNOWN]`, `[COMPUTED]`, `[INFERRED]`, `[COMMON]`, `[FRAME]`, or `[GUESS]`, with a confidence rating — making the reasoning transparent and auditable
-- **Inline citations** in every response — `[Dance To Your Maximum, Chapter X-Y, pp. Z–W]` — drawn from chunk metadata, never fabricated
+- **Inline citations** in every response — `[Dance To Your Maximum, Chapter X-Y, Page Z–W]` — drawn from chunk metadata, never fabricated
 - **Graceful refusal:** questions outside the scope of the retrieved context produce `"I don't have that in my knowledge base."` rather than a speculative answer
 - **Faithfulness evaluation pipeline** using an LLM-as-judge (`gpt-4.1-mini`, temp=0) over a fixed 15-question benchmark, targeting ≥90% faithfulness
 - **LangSmith observability** integrated for full chain tracing; currently disabled — activate by setting `LANGCHAIN_TRACING_V2=true` and supplying a `LANGCHAIN_API_KEY`
