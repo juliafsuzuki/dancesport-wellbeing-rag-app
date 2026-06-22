@@ -84,7 +84,7 @@ The ingestion pipeline applies hierarchical chunking tuned to the workbook's str
 
 <br />
 
-## Home page / GUI
+## Chatbot UI
 
 The home page surfaces 6 pre-built categories with clickable example questions, arranged in a two-column grid.
 
