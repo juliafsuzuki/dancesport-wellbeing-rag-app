@@ -58,6 +58,7 @@ wellbeing-coach-rag-app/
 ## Technical Architecture
 
 <img width="1672" height="941" alt="6-EndToEndWorkflow" src="https://github.com/user-attachments/assets/d0e37f8d-ef2b-4fdd-99c3-f166a12b1edb" />
+
 <br />
 
 ### Getting started:
@@ -66,8 +67,6 @@ wellbeing-coach-rag-app/
 3. Populate `.env` with `OPENAI_API_KEY`, `PINECONE_API_KEY`, and `LANGCHAIN_API_KEY`.
 4. Run the notebook to ingest the PDF and build the Pinecone index.
 5. Launch the UI: `streamlit run app.py`
-
-<br />
 
 ### AI Stack:
 - **Orchestration:** LangChain + LangGraph + LangSmith
@@ -133,8 +132,6 @@ The home page surfaces 6 pre-built categories with clickable example questions, 
 - How can visualization improve my showcase performance?
 
 Users can also type a free-text question in the persistent chat input at the bottom.
-
-<br />
 
 ### Answer format:
 
